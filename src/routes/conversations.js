@@ -1,0 +1,5 @@
+import { Router } from 'express';import { requireAuth } from '../middleware/auth.js';import { query } from '../database/pool.js';
+const r=Router().use(requireAuth);
+r.get('/',async(req,res)=>{const q=await query(`select c.*, (select content from messages m where m.conversation_id=c.id order by created_at desc limit 1) last_message from conversations c where user_id=$1 order by updated_at desc`,[req.user.id]);res.json({success:true,conversations:q.rows});});
+r.get('/:id',async(req,res)=>{const c=await query('select * from conversations where id=$1 and user_id=$2',[req.params.id,req.user.id]);if(!c.rowCount)return res.status(404).json({success:false,error:'Conversation not found'});const m=await query('select id,role,content,created_at from messages where conversation_id=$1 order by created_at asc',[req.params.id]);res.json({success:true,conversation:c.rows[0],messages:m.rows});});
+r.delete('/:id',async(req,res)=>{const q=await query('delete from conversations where id=$1 and user_id=$2 returning id',[req.params.id,req.user.id]);res.status(q.rowCount?200:404).json(q.rowCount?{success:true}:{success:false,error:'Conversation not found'});});export default r;

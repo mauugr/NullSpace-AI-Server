@@ -1,0 +1,1 @@
+import { Router } from 'express';import { query } from '../database/pool.js';const r=Router();r.get('/',async(req,res)=>{try{await query('select 1');res.json({success:true,status:'online',database:'online',timestamp:new Date().toISOString()});}catch(e){res.status(503).json({success:false,status:'degraded',database:'offline'});}});export default r;

@@ -1,0 +1,1 @@
+{"name":"NullSpace AI Server","short_name":"NullSpace AI","description":"Servidor cloud y cliente PWA para NullSpace AI","start_url":"/","display":"standalone","background_color":"#07090d","theme_color":"#090b10","icons":[{"src":"/assets/icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
