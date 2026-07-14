@@ -1,13 +1,23 @@
-FROM node:22-alpine AS deps
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --omit=dev
+FROM node:22-bookworm-slim
 
-FROM node:22-alpine
-ENV NODE_ENV=production
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+
+ENV NODE_ENV=production
+ENV NPM_CONFIG_AUDIT=false
+ENV NPM_CONFIG_FUND=false
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
+
+COPY package.json package-lock.json ./
+
+RUN npm ci --omit=dev --no-audit --no-fund \
+    && npm cache clean --force
+
 COPY . .
+
+RUN chown -R node:node /app
+
 USER node
+
 EXPOSE 3000
-CMD ["node", "src/server.js"]
+
+CMD ["npm", "start"]
